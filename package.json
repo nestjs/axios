@@ -21,8 +21,8 @@
     "axios": "0.21.1"
   },
   "devDependencies": {
-    "@commitlint/cli": "11.0.0",
-    "@commitlint/config-angular": "11.0.0",
+    "@commitlint/cli": "12.1.1",
+    "@commitlint/config-angular": "12.1.1",
     "@nestjs/common": "7.6.15",
     "@nestjs/core": "7.6.15",
     "@nestjs/platform-express": "7.6.15",
