@@ -12,7 +12,7 @@ import { AXIOS_INSTANCE_TOKEN } from './http.constants';
 export class HttpService {
   constructor(
     @Inject(AXIOS_INSTANCE_TOKEN)
-    private readonly instance: AxiosInstance = Axios,
+    protected readonly instance: AxiosInstance = Axios,
   ) {}
 
   request<T = any>(config: AxiosRequestConfig): Observable<AxiosResponse<T>> {
@@ -68,7 +68,7 @@ export class HttpService {
     return this.instance;
   }
 
-  private makeObservable<T>(
+  protected makeObservable<T>(
     axios: (...args: any[]) => AxiosPromise<T>,
     ...args: any[]
   ) {
