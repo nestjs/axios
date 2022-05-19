@@ -1,6 +1,7 @@
 import { DynamicModule, Module, Provider } from '@nestjs/common';
 import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
-import Axios from 'axios';
+import { omit } from 'lodash'
+import Axios, { AxiosInstance } from 'axios';
 import {
   AXIOS_INSTANCE_TOKEN,
   HTTP_MODULE_ID,
@@ -13,6 +14,9 @@ import {
   HttpModuleOptionsFactory,
 } from './interfaces';
 
+
+
+
 @Module({
   providers: [
     HttpService,
@@ -24,13 +28,23 @@ import {
   exports: [HttpService],
 })
 export class HttpModule {
+  static createAxiosInstance(config: HttpModuleOptions): AxiosInstance {
+    const instance = Axios.create(omit(config, 'interceptors'));
+    if (config.interceptors?.request) {
+      instance.interceptors.request.use.apply(instance.interceptors.request, config.interceptors.request);
+    }
+    if (config.interceptors?.response) {
+      instance.interceptors.response.use.apply(instance.interceptors.response, config.interceptors.response);
+    }
+    return instance;
+  }
   static register(config: HttpModuleOptions): DynamicModule {
     return {
       module: HttpModule,
       providers: [
         {
           provide: AXIOS_INSTANCE_TOKEN,
-          useValue: Axios.create(config),
+          useValue: () => HttpModule.createAxiosInstance(config),
         },
         {
           provide: HTTP_MODULE_ID,
@@ -48,7 +62,7 @@ export class HttpModule {
         ...this.createAsyncProviders(options),
         {
           provide: AXIOS_INSTANCE_TOKEN,
-          useFactory: (config: HttpModuleOptions) => Axios.create(config),
+          useFactory: HttpModule.createAxiosInstance,
           inject: [HTTP_MODULE_OPTIONS],
         },
         {

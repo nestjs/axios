@@ -17,3 +17,4 @@ npm-debug.log
 
 # dist
 dist
+yarn.lock
