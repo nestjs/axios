@@ -15,7 +15,8 @@
     "publish:next": "npm publish --access public --tag next",
     "test:e2e": "jest --config ./tests/jest-e2e.json --runInBand",
     "prerelease": "npm run build",
-    "release": "release-it"
+    "release": "release-it",
+    "prepare": "husky install"
   },
   "dependencies": {
     "axios": "0.27.2"
@@ -51,15 +52,7 @@
     "rxjs": "^6.0.0 || ^7.0.0"
   },
   "lint-staged": {
-    "*.ts": [
-      "prettier --write"
-    ]
-  },
-  "husky": {
-    "hooks": {
-      "commit-msg": "commitlint -c .commitlintrc.json -E HUSKY_GIT_PARAMS",
-      "pre-commit": "lint-staged"
-    }
+    "**/*.{ts,json}": []
   },
   "repository": {
     "type": "git",
