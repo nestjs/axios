@@ -19,7 +19,7 @@
     "prepare": "husky install"
   },
   "dependencies": {
-    "axios": "0.27.2"
+    "axios": "1.1.2"
   },
   "devDependencies": {
     "@commitlint/cli": "17.1.2",
