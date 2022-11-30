@@ -1,7 +1,9 @@
 import { ModuleMetadata, Provider, Type } from '@nestjs/common';
-import { AxiosRequestConfig } from 'axios';
+import { AxiosError, AxiosRequestConfig } from 'axios';
 
 export type HttpModuleOptions = AxiosRequestConfig;
+
+export type HttpResponseError = AxiosError;
 
 export interface HttpModuleOptionsFactory {
   createHttpOptions(): Promise<HttpModuleOptions> | HttpModuleOptions;
