@@ -40,25 +40,25 @@ export class HttpService {
     return this.makeObservable<T>(this.instance.head, url, config);
   }
 
-  post<T = any>(
+  post<T = any, U = any>(
     url: string,
-    data?: any,
+    data?: U,
     config?: AxiosRequestConfig,
   ): Observable<AxiosResponse<T>> {
     return this.makeObservable<T>(this.instance.post, url, data, config);
   }
 
-  put<T = any>(
+  put<T = any, U = any>(
     url: string,
-    data?: any,
+    data?: U,
     config?: AxiosRequestConfig,
   ): Observable<AxiosResponse<T>> {
     return this.makeObservable<T>(this.instance.put, url, data, config);
   }
 
-  patch<T = any>(
+  patch<T = any, U = any>(
     url: string,
-    data?: any,
+    data?: U,
     config?: AxiosRequestConfig,
   ): Observable<AxiosResponse<T>> {
     return this.makeObservable<T>(this.instance.patch, url, data, config);
