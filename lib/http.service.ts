@@ -1,11 +1,12 @@
 import { Inject } from '@nestjs/common';
-import Axios, {
+import {
   AxiosInstance,
   AxiosPromise,
   AxiosRequestConfig,
   AxiosResponse,
   CancelTokenSource,
-} from 'axios';
+} from './axios.types';
+import Axios from 'axios';
 import { Observable } from 'rxjs';
 import { AXIOS_INSTANCE_TOKEN } from './http.constants';
 
