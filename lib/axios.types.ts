@@ -4,4 +4,5 @@ export {
   AxiosRequestConfig,
   AxiosResponse,
   CancelTokenSource,
+  AxiosError,
 } from 'axios';
