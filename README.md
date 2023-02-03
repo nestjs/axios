@@ -31,7 +31,7 @@
 ## Installation
 
 ```bash
-$ npm i --save @nestjs/axios
+$ npm i --save @nestjs/axios axios
 ```
 
 ## Quick Start
