@@ -9,6 +9,9 @@ import Axios, {
 import { Observable } from 'rxjs';
 import { AXIOS_INSTANCE_TOKEN } from './http.constants';
 
+/**
+ * @publicApi
+ */
 export class HttpService {
   constructor(
     @Inject(AXIOS_INSTANCE_TOKEN)
