@@ -26,20 +26,6 @@ export class HttpService {
     return this.makeObservable<T>(this.instance.get, url, config);
   }
 
-  delete<T = any>(
-    url: string,
-    config?: AxiosRequestConfig,
-  ): Observable<AxiosResponse<T>> {
-    return this.makeObservable<T>(this.instance.delete, url, config);
-  }
-
-  head<T = any>(
-    url: string,
-    config?: AxiosRequestConfig,
-  ): Observable<AxiosResponse<T>> {
-    return this.makeObservable<T>(this.instance.head, url, config);
-  }
-
   post<T = any>(
     url: string,
     data?: any,
@@ -64,6 +50,20 @@ export class HttpService {
     return this.makeObservable<T>(this.instance.patch, url, data, config);
   }
 
+  delete<T = any>(
+    url: string,
+    config?: AxiosRequestConfig,
+  ): Observable<AxiosResponse<T>> {
+    return this.makeObservable<T>(this.instance.delete, url, config);
+  }
+
+  head<T = any>(
+    url: string,
+    config?: AxiosRequestConfig,
+  ): Observable<AxiosResponse<T>> {
+    return this.makeObservable<T>(this.instance.head, url, config);
+  }
+
   get axiosRef(): AxiosInstance {
     return this.instance;
   }
@@ -76,6 +76,7 @@ export class HttpService {
       const config: AxiosRequestConfig = { ...(args[args.length - 1] || {}) };
 
       let cancelSource: CancelTokenSource;
+
       if (!config.cancelToken) {
         cancelSource = Axios.CancelToken.source();
         config.cancelToken = cancelSource.token;
@@ -89,6 +90,7 @@ export class HttpService {
         .catch(err => {
           subscriber.error(err);
         });
+
       return () => {
         if (config.responseType === 'stream') {
           return;
@@ -97,7 +99,8 @@ export class HttpService {
         if (cancelSource) {
           cancelSource.cancel();
         }
-      };
+      }
+
     });
   }
 }
