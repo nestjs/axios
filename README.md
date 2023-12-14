@@ -24,7 +24,9 @@
 
 ## Description
 
-[Axios](https://www.npmjs.com/package/axios) module for [Nest](https://github.com/nestjs/nest) originally published as part of the `@nestjs/common` package. This package is a drop-in replacement for the deprecated (and eventually removed) `HttpModule`.
+[Axios](https://www.npmjs.com/package/axios) module for [Nest](https://github.com/nestjs/nest).
+
+The `HttpModule` module exposes Axios-based methods to perform HTTP requests. This library also transforms the resulting HTTP responses into Observables (from [RxJS](https://rxjs.dev)).
 
 ## Installation
 
