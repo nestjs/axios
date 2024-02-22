@@ -40,7 +40,7 @@ export class HttpService {
     return this.makeObservable<T>(this.instance.head, url, config);
   }
 
-  post<T extends unknown, D extends unknown>(
+  post<T = any, D = any>(
     url: string,
     data: D,
     config?: AxiosRequestConfig<D>,
@@ -53,7 +53,7 @@ export class HttpService {
     return this.makeObservable<T>(this.instance.post, url, data, config);
   }
 
-  put<T extends unknown, D extends unknown>(
+  put<T = any, D = any>(
     url: string,
     data: D,
     config?: AxiosRequestConfig<D>,
@@ -66,7 +66,7 @@ export class HttpService {
     return this.makeObservable<T>(this.instance.put, url, data, config);
   }
 
-  patch<T extends unknown, D extends unknown>(
+  patch<T = any, D = any>(
     url: string,
     data: D,
     config?: AxiosRequestConfig<D>,
