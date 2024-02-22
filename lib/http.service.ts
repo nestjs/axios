@@ -19,27 +19,32 @@ export class HttpService {
     return this.makeObservable<T>(this.instance.request, config);
   }
 
-  get<T = any>(
+  get<T = any, D = any>(
     url: string,
-    config?: AxiosRequestConfig,
-  ): Observable<AxiosResponse<T>> {
+    config?: AxiosRequestConfig<D>,
+  ): Observable<AxiosResponse<T, D>> {
     return this.makeObservable<T>(this.instance.get, url, config);
   }
 
-  delete<T = any>(
+  delete<T = any, D = any>(
     url: string,
-    config?: AxiosRequestConfig,
-  ): Observable<AxiosResponse<T>> {
+    config?: AxiosRequestConfig<D>,
+  ): Observable<AxiosResponse<T, D>> {
     return this.makeObservable<T>(this.instance.delete, url, config);
   }
 
-  head<T = any>(
+  head<T = any, D = any>(
     url: string,
-    config?: AxiosRequestConfig,
-  ): Observable<AxiosResponse<T>> {
+    config?: AxiosRequestConfig<D>,
+  ): Observable<AxiosResponse<T, D>> {
     return this.makeObservable<T>(this.instance.head, url, config);
   }
 
+  post<T extends unknown, D extends unknown>(
+    url: string,
+    data: D,
+    config?: AxiosRequestConfig<D>,
+  ): Observable<AxiosResponse<T, D>>;
   post<T = any>(
     url: string,
     data?: any,
@@ -48,6 +53,11 @@ export class HttpService {
     return this.makeObservable<T>(this.instance.post, url, data, config);
   }
 
+  put<T extends unknown, D extends unknown>(
+    url: string,
+    data: D,
+    config?: AxiosRequestConfig<D>,
+  ): Observable<AxiosResponse<T, D>>;
   put<T = any>(
     url: string,
     data?: any,
@@ -56,6 +66,11 @@ export class HttpService {
     return this.makeObservable<T>(this.instance.put, url, data, config);
   }
 
+  patch<T extends unknown, D extends unknown>(
+    url: string,
+    data: D,
+    config?: AxiosRequestConfig<D>,
+  ): Observable<AxiosResponse<T, D>>;
   patch<T = any>(
     url: string,
     data?: any,
