@@ -27,7 +27,6 @@ export class HttpModule {
   static register(config: HttpModuleOptions): DynamicModule {
     return {
       module: HttpModule,
-      global: config.global,
       providers: [
         {
           provide: AXIOS_INSTANCE_TOKEN,
@@ -44,7 +43,44 @@ export class HttpModule {
   static registerAsync(options: HttpModuleAsyncOptions): DynamicModule {
     return {
       module: HttpModule,
-      global: options.global,
+      imports: options.imports,
+      providers: [
+        ...this.createAsyncProviders(options),
+        {
+          provide: AXIOS_INSTANCE_TOKEN,
+          useFactory: (config: HttpModuleOptions) => Axios.create(config),
+          inject: [HTTP_MODULE_OPTIONS],
+        },
+        {
+          provide: HTTP_MODULE_ID,
+          useValue: randomStringGenerator(),
+        },
+        ...(options.extraProviders || []),
+      ],
+    };
+  }
+
+  static forRoot(config: HttpModuleOptions): DynamicModule {
+    return {
+      module: HttpModule,
+      global: true,
+      providers: [
+        {
+          provide: AXIOS_INSTANCE_TOKEN,
+          useValue: Axios.create(config),
+        },
+        {
+          provide: HTTP_MODULE_ID,
+          useValue: randomStringGenerator(),
+        },
+      ],
+    };
+  }
+
+  static forRootAsync(options: HttpModuleAsyncOptions): DynamicModule {
+    return {
+      module: HttpModule,
+      global: true,
       imports: options.imports,
       providers: [
         ...this.createAsyncProviders(options),
