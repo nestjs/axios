@@ -27,6 +27,7 @@ export class HttpModule {
   static register(config: HttpModuleOptions): DynamicModule {
     return {
       module: HttpModule,
+      global: config.global,
       providers: [
         {
           provide: AXIOS_INSTANCE_TOKEN,
@@ -43,6 +44,7 @@ export class HttpModule {
   static registerAsync(options: HttpModuleAsyncOptions): DynamicModule {
     return {
       module: HttpModule,
+      global: options.global,
       imports: options.imports,
       providers: [
         ...this.createAsyncProviders(options),

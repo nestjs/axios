@@ -1,7 +1,7 @@
 import { ModuleMetadata, Provider, Type } from '@nestjs/common';
 import { AxiosRequestConfig } from 'axios';
 
-export type HttpModuleOptions = AxiosRequestConfig;
+export type HttpModuleOptions = AxiosRequestConfig & {global?: boolean};
 
 export interface HttpModuleOptionsFactory {
   createHttpOptions(): Promise<HttpModuleOptions> | HttpModuleOptions;
@@ -9,6 +9,7 @@ export interface HttpModuleOptionsFactory {
 
 export interface HttpModuleAsyncOptions
   extends Pick<ModuleMetadata, 'imports'> {
+  global?: boolean;
   useExisting?: Type<HttpModuleOptionsFactory>;
   useClass?: Type<HttpModuleOptionsFactory>;
   useFactory?: (
