@@ -1,5 +1,6 @@
 import { ModuleMetadata, Provider, Type } from '@nestjs/common';
 import { AxiosRequestConfig } from 'axios';
+import { InjectionToken } from './injection-token.interface';
 
 export type HttpModuleOptions = AxiosRequestConfig;
 
@@ -14,6 +15,6 @@ export interface HttpModuleAsyncOptions
   useFactory?: (
     ...args: any[]
   ) => Promise<HttpModuleOptions> | HttpModuleOptions;
-  inject?: any[];
+  inject?: InjectionToken[];
   extraProviders?: Provider[];
 }
