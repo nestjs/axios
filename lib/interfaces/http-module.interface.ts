@@ -1,4 +1,9 @@
-import { ModuleMetadata, Provider, Type } from '@nestjs/common';
+import {
+  FactoryProvider,
+  ModuleMetadata,
+  Provider,
+  Type,
+} from '@nestjs/common';
 import { AxiosRequestConfig } from 'axios';
 
 export type HttpModuleOptions = AxiosRequestConfig;
@@ -14,6 +19,6 @@ export interface HttpModuleAsyncOptions
   useFactory?: (
     ...args: any[]
   ) => Promise<HttpModuleOptions> | HttpModuleOptions;
-  inject?: any[];
+  inject?: FactoryProvider['inject'];
   extraProviders?: Provider[];
 }
