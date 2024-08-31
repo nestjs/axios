@@ -29,7 +29,7 @@
     "@types/node": "20.16.2",
     "@typescript-eslint/eslint-plugin": "8.3.0",
     "@typescript-eslint/parser": "8.3.0",
-    "axios": "1.7.6",
+    "axios": "1.7.7",
     "eslint": "8.57.0",
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-import": "2.29.1",
