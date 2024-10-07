@@ -25,12 +25,22 @@ import {
 })
 export class HttpModule {
   static register(config: HttpModuleOptions): DynamicModule {
+    const { interceptors, ...conf } = config;
+    const axiosInstance = Axios.create(conf);
+    axiosInstance.interceptors.request.use(
+      interceptors.request?.onFullfilled,
+      interceptors.request?.onRejected,
+    );
+    axiosInstance.interceptors.response.use(
+      interceptors.response?.onFullfilled,
+      interceptors.response?.onRejected,
+    );
     return {
       module: HttpModule,
       providers: [
         {
           provide: AXIOS_INSTANCE_TOKEN,
-          useValue: Axios.create(config),
+          useValue: axiosInstance,
         },
         {
           provide: HTTP_MODULE_ID,
@@ -48,7 +58,19 @@ export class HttpModule {
         ...this.createAsyncProviders(options),
         {
           provide: AXIOS_INSTANCE_TOKEN,
-          useFactory: (config: HttpModuleOptions) => Axios.create(config),
+          useFactory: (config: HttpModuleOptions) => {
+            const { interceptors, ...conf } = config;
+            const axiosInstance = Axios.create(conf);
+            axiosInstance.interceptors.request.use(
+              interceptors.request?.onFullfilled,
+              interceptors.request?.onRejected,
+            );
+            axiosInstance.interceptors.response.use(
+              interceptors.response?.onFullfilled,
+              interceptors.response?.onRejected,
+            );
+            return axiosInstance;
+          },
           inject: [HTTP_MODULE_OPTIONS],
         },
         {
