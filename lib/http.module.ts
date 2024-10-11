@@ -60,6 +60,44 @@ export class HttpModule {
     };
   }
 
+  static forRoot(config: HttpModuleOptions): DynamicModule {
+    return {
+      module: HttpModule,
+      global: true,
+      providers: [
+        {
+          provide: AXIOS_INSTANCE_TOKEN,
+          useValue: Axios.create(config),
+        },
+        {
+          provide: HTTP_MODULE_ID,
+          useValue: randomStringGenerator(),
+        },
+      ],
+    };
+  }
+
+  static forRootAsync(options: HttpModuleAsyncOptions): DynamicModule {
+    return {
+      module: HttpModule,
+      global: true,
+      imports: options.imports,
+      providers: [
+        ...this.createAsyncProviders(options),
+        {
+          provide: AXIOS_INSTANCE_TOKEN,
+          useFactory: (config: HttpModuleOptions) => Axios.create(config),
+          inject: [HTTP_MODULE_OPTIONS],
+        },
+        {
+          provide: HTTP_MODULE_ID,
+          useValue: randomStringGenerator(),
+        },
+        ...(options.extraProviders || []),
+      ],
+    };
+  }
+
   private static createAsyncProviders(
     options: HttpModuleAsyncOptions,
   ): Provider[] {
