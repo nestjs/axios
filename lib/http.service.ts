@@ -127,10 +127,10 @@ export class HttpService {
     ...args: any[]
   ) {
     return new Observable<AxiosResponse<T>>(subscriber => {
-      let config: AxiosRequestConfig = args[args.length - 1];
-      if (!config) {
-        config = {};
-      }
+      const argsCopy = [...args];
+      const configIdx = argsCopy.length - 1;
+      const config: AxiosRequestConfig = { ...(argsCopy[configIdx] || {}) };
+      argsCopy[configIdx] = config;
 
       let cancelSource: CancelTokenSource;
       if (!config.cancelToken) {
@@ -138,7 +138,7 @@ export class HttpService {
         config.cancelToken = cancelSource.token;
       }
 
-      axios(...args)
+      axios(...argsCopy)
         .then(res => {
           subscriber.next(res);
           subscriber.complete();
