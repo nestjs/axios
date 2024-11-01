@@ -42,40 +42,25 @@ export class HttpService {
 
   post<T = any, D = any>(
     url: string,
-    data: D,
+    data?: D,
     config?: AxiosRequestConfig<D>,
-  ): Observable<AxiosResponse<T, D>>;
-  post<T = any>(
-    url: string,
-    data?: any,
-    config?: AxiosRequestConfig,
-  ): Observable<AxiosResponse<T>> {
+  ): Observable<AxiosResponse<T, D>> {
     return this.makeObservable<T>(this.instance.post, url, data, config);
   }
 
   put<T = any, D = any>(
     url: string,
-    data: D,
+    data?: D,
     config?: AxiosRequestConfig<D>,
-  ): Observable<AxiosResponse<T, D>>;
-  put<T = any>(
-    url: string,
-    data?: any,
-    config?: AxiosRequestConfig,
-  ): Observable<AxiosResponse<T>> {
+  ): Observable<AxiosResponse<T, D>> {
     return this.makeObservable<T>(this.instance.put, url, data, config);
   }
 
   patch<T = any, D = any>(
     url: string,
-    data: D,
+    data?: D,
     config?: AxiosRequestConfig<D>,
-  ): Observable<AxiosResponse<T, D>>;
-  patch<T = any>(
-    url: string,
-    data?: any,
-    config?: AxiosRequestConfig,
-  ): Observable<AxiosResponse<T>> {
+  ): Observable<AxiosResponse<T, D>> {
     return this.makeObservable<T>(this.instance.patch, url, data, config);
   }
 
@@ -83,12 +68,7 @@ export class HttpService {
     url: string,
     data: D,
     config?: AxiosRequestConfig<D>,
-  ): Observable<AxiosResponse<T, D>>;
-  postForm<T = any>(
-    url: string,
-    data?: any,
-    config?: AxiosRequestConfig,
-  ): Observable<AxiosResponse<T>> {
+  ): Observable<AxiosResponse<T, D>> {
     return this.makeObservable<T>(this.instance.postForm, url, data, config);
   }
 
@@ -96,12 +76,7 @@ export class HttpService {
     url: string,
     data: D,
     config?: AxiosRequestConfig<D>,
-  ): Observable<AxiosResponse<T, D>>;
-  putForm<T = any>(
-    url: string,
-    data?: any,
-    config?: AxiosRequestConfig,
-  ): Observable<AxiosResponse<T>> {
+  ): Observable<AxiosResponse<T, D>> {
     return this.makeObservable<T>(this.instance.putForm, url, data, config);
   }
 
@@ -109,12 +84,7 @@ export class HttpService {
     url: string,
     data: D,
     config?: AxiosRequestConfig<D>,
-  ): Observable<AxiosResponse<T, D>>;
-  patchForm<T = any>(
-    url: string,
-    data?: any,
-    config?: AxiosRequestConfig,
-  ): Observable<AxiosResponse<T>> {
+  ): Observable<AxiosResponse<T, D>> {
     return this.makeObservable<T>(this.instance.patchForm, url, data, config);
   }
 
