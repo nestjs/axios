@@ -42,7 +42,7 @@ export class HttpService {
 
   post<T = any, D = any>(
     url: string,
-    data: D,
+    data?: D,
     config?: AxiosRequestConfig<D>,
   ): Observable<AxiosResponse<T, D>>;
   post<T = any>(
@@ -55,7 +55,7 @@ export class HttpService {
 
   put<T = any, D = any>(
     url: string,
-    data: D,
+    data?: D,
     config?: AxiosRequestConfig<D>,
   ): Observable<AxiosResponse<T, D>>;
   put<T = any>(
@@ -68,7 +68,7 @@ export class HttpService {
 
   patch<T = any, D = any>(
     url: string,
-    data: D,
+    data?: D,
     config?: AxiosRequestConfig<D>,
   ): Observable<AxiosResponse<T, D>>;
   patch<T = any>(
@@ -81,7 +81,7 @@ export class HttpService {
 
   postForm<T = any, D = any>(
     url: string,
-    data: D,
+    data?: D,
     config?: AxiosRequestConfig<D>,
   ): Observable<AxiosResponse<T, D>>;
   postForm<T = any>(
@@ -94,7 +94,7 @@ export class HttpService {
 
   putForm<T = any, D = any>(
     url: string,
-    data: D,
+    data?: D,
     config?: AxiosRequestConfig<D>,
   ): Observable<AxiosResponse<T, D>>;
   putForm<T = any>(
@@ -107,7 +107,7 @@ export class HttpService {
 
   patchForm<T = any, D = any>(
     url: string,
-    data: D,
+    data?: D,
     config?: AxiosRequestConfig<D>,
   ): Observable<AxiosResponse<T, D>>;
   patchForm<T = any>(
