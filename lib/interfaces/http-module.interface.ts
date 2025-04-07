@@ -13,10 +13,16 @@ export type HttpModuleOptions = AxiosRequestConfig & {
   global?: boolean;
 };
 
+/**
+ * @publicApi
+ */
 export interface HttpModuleOptionsFactory {
   createHttpOptions(): Promise<HttpModuleOptions> | HttpModuleOptions;
 }
 
+/**
+ * @publicApi
+ */
 export interface HttpModuleAsyncOptions
   extends Pick<ModuleMetadata, 'imports'> {
   useExisting?: Type<HttpModuleOptionsFactory>;

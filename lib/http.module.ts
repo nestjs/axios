@@ -13,6 +13,9 @@ import {
   HttpModuleOptionsFactory,
 } from './interfaces';
 
+/**
+ * @publicApi
+ */
 @Module({
   providers: [
     HttpService,
