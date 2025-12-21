@@ -1,41 +1,40 @@
-import { DynamicModule, Module, Provider } from '@nestjs/common';
-import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
-import Axios from 'axios';
 import {
-  AXIOS_INSTANCE_TOKEN,
   HTTP_MODULE_ID,
   HTTP_MODULE_OPTIONS,
+  AXIOS_INSTANCE_TOKEN,
+  KY_INSTANCE_TOKEN,
 } from './http.constants';
 import { HttpService } from './http.service';
 import {
-  HttpModuleAsyncOptions,
   HttpModuleOptions,
+  AxiosHttpModuleOptions,
+  HttpModuleAsyncOptions,
   HttpModuleOptionsFactory,
+  AxiosHttpModuleAsyncOptions,
 } from './interfaces';
+import { KyProvider } from './providers/ky.provider';
+import { AxiosProvider } from './providers/axios.provider';
+import { HttpProviderRegistry } from './http-provider-registry';
+import { DynamicModule, Module, Provider } from '@nestjs/common';
+import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
 
 /**
  * @publicApi
  */
-@Module({
-  providers: [
-    HttpService,
-    {
-      provide: AXIOS_INSTANCE_TOKEN,
-      useValue: Axios,
-    },
-  ],
-  exports: [HttpService],
-})
+@Module({})
 export class HttpModule {
-  static register(config: HttpModuleOptions): DynamicModule {
+  static register<T extends HttpModuleOptions = AxiosHttpModuleOptions>(
+    config: T,
+  ): DynamicModule {
+    const { provider = 'axios', global, ...providerConfig } = config;
+
+    const factory = HttpProviderRegistry.getFactory(provider);
+
     return {
       module: HttpModule,
-      global: config.global,
+      global: global,
       providers: [
-        {
-          provide: AXIOS_INSTANCE_TOKEN,
-          useValue: Axios.create(config),
-        },
+        ...factory.createProvider(providerConfig),
         {
           provide: HTTP_MODULE_ID,
           useValue: randomStringGenerator(),
@@ -44,7 +43,25 @@ export class HttpModule {
     };
   }
 
-  static registerAsync(options: HttpModuleAsyncOptions): DynamicModule {
+  static registerAsync<
+    T extends HttpModuleAsyncOptions = AxiosHttpModuleAsyncOptions,
+  >(options: T): DynamicModule {
+    const provider = options.provider || 'axios';
+    const factory = HttpProviderRegistry.getFactory(provider);
+
+    const instanceTokenMap = {
+      ky: KY_INSTANCE_TOKEN,
+      axios: AXIOS_INSTANCE_TOKEN,
+    };
+
+    const providerClassMap = {
+      ky: KyProvider,
+      axios: AxiosProvider,
+    };
+
+    const instanceToken = instanceTokenMap[provider];
+    const providerClass = providerClassMap[provider];
+
     return {
       module: HttpModule,
       global: options.global,
@@ -52,9 +69,17 @@ export class HttpModule {
       providers: [
         ...this.createAsyncProviders(options),
         {
-          provide: AXIOS_INSTANCE_TOKEN,
-          useFactory: (config: HttpModuleOptions) => Axios.create(config),
+          provide: instanceToken,
+          useFactory: (config: HttpModuleOptions) => {
+            const { provider: _, ...providerConfig } = config;
+            return factory.createInstance(providerConfig);
+          },
           inject: [HTTP_MODULE_OPTIONS],
+        },
+        providerClass,
+        {
+          provide: HttpService,
+          useClass: providerClass,
         },
         {
           provide: HTTP_MODULE_ID,
