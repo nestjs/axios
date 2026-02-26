@@ -28,7 +28,7 @@
     "@nestjs/platform-express": "11.1.14",
     "@nestjs/testing": "11.1.14",
     "@types/jest": "30.0.0",
-    "@types/node": "24.10.14",
+    "@types/node": "24.10.15",
     "axios": "1.13.5",
     "eslint": "10.0.2",
     "eslint-config-prettier": "10.1.8",
