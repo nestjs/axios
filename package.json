@@ -21,8 +21,8 @@
   "devDependencies": {
     "@eslint/eslintrc": "3.3.5",
     "@eslint/js": "10.0.1",
-    "@commitlint/cli": "20.4.3",
-    "@commitlint/config-angular": "20.4.3",
+    "@commitlint/cli": "20.4.4",
+    "@commitlint/config-angular": "20.4.4",
     "@nestjs/common": "11.1.16",
     "@nestjs/core": "11.1.16",
     "@nestjs/platform-express": "11.1.16",
