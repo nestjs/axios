@@ -29,7 +29,7 @@
     "@nestjs/testing": "11.1.18",
     "@types/jest": "30.0.0",
     "@types/node": "24.12.2",
-    "axios": "1.14.0",
+    "axios": "1.15.0",
     "eslint": "10.2.0",
     "eslint-config-prettier": "10.1.8",
     "eslint-plugin-prettier": "5.5.5",
