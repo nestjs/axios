@@ -74,8 +74,8 @@ export class HttpModule {
     return [
       this.createAsyncOptionsProvider(options),
       {
-        provide: options.useClass,
-        useClass: options.useClass,
+        provide: options.useClass!,
+        useClass: options.useClass!,
       },
     ];
   }
@@ -94,7 +94,7 @@ export class HttpModule {
       provide: HTTP_MODULE_OPTIONS,
       useFactory: async (optionsFactory: HttpModuleOptionsFactory) =>
         optionsFactory.createHttpOptions(),
-      inject: [options.useExisting || options.useClass],
+      inject: [options.useExisting ?? options.useClass!],
     };
   }
 }
