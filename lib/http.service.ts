@@ -7,7 +7,7 @@ import Axios, {
   CancelTokenSource,
 } from 'axios';
 import { Observable } from 'rxjs';
-import { AXIOS_INSTANCE_TOKEN } from './http.constants';
+import { AXIOS_INSTANCE_TOKEN } from './http.constants.js';
 
 export class HttpService {
   constructor(

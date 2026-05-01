@@ -1,17 +1,19 @@
 import { DynamicModule, Module, Provider } from '@nestjs/common';
-import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
+import { randomBytes } from 'node:crypto';
 import Axios from 'axios';
 import {
   AXIOS_INSTANCE_TOKEN,
   HTTP_MODULE_ID,
   HTTP_MODULE_OPTIONS,
-} from './http.constants';
-import { HttpService } from './http.service';
+} from './http.constants.js';
+import { HttpService } from './http.service.js';
 import {
   HttpModuleAsyncOptions,
   HttpModuleOptions,
   HttpModuleOptionsFactory,
-} from './interfaces';
+} from './interfaces/index.js';
+
+const randomStringGenerator = () => randomBytes(16).toString('base64url').slice(0, 21);
 
 /**
  * @publicApi

@@ -1,3 +1,3 @@
-export * from './http.module';
-export * from './http.service';
-export * from './interfaces';
+export * from './http.module.js';
+export * from './http.service.js';
+export * from './interfaces/index.js';
