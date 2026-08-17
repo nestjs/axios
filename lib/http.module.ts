@@ -13,7 +13,8 @@ import {
   HttpModuleOptionsFactory,
 } from './interfaces/index.js';
 
-const randomStringGenerator = () => randomBytes(16).toString('base64url').slice(0, 21);
+const randomStringGenerator = () =>
+  randomBytes(16).toString('base64url').slice(0, 21);
 
 /**
  * @publicApi
