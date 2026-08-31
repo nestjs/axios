@@ -118,6 +118,19 @@ export class HttpService {
     return this.makeObservable<T>(this.instance.patchForm, url, data, config);
   }
 
+  query<T = any, D = any>(
+    url: string,
+    data?: D,
+    config?: AxiosRequestConfig<D>,
+  ): Observable<AxiosResponse<T, D>>;
+  query<T = any>(
+    url: string,
+    data?: any,
+    config?: AxiosRequestConfig,
+  ): Observable<AxiosResponse<T>> {
+    return this.makeObservable<T>(this.instance.query, url, data, config);
+  }
+
   get axiosRef(): AxiosInstance {
     return this.instance;
   }
