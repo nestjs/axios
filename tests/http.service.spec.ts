@@ -127,6 +127,17 @@ describe('HttpService (e2e)', () => {
     expect(request.body).toContain('name="b"');
   });
 
+  it('sends a QUERY body', async () => {
+    const response = await firstValueFrom(
+      service.query('/things', { filter: 'nest' }),
+    );
+
+    expect(response.status).toBe(200);
+    const request = received.at(-1)!;
+    expect(request.method).toBe('QUERY');
+    expect(JSON.parse(request.body)).toEqual({ filter: 'nest' });
+  });
+
   it('errors the observable on a non-2xx response', async () => {
     await expect(firstValueFrom(service.get('/boom'))).rejects.toMatchObject({
       response: { status: 500, data: { message: 'kaboom' } },
