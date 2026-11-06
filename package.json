@@ -13,7 +13,15 @@
   "engines": {
     "node": "^20.19.0 || ^22.12.0 || >=24.0.0"
   },
-  "description": "Nest - modern, fast, powerful node.js web framework (@axios)",
+  "description": "Axios for NestJS: an injectable HttpService that wraps Axios and returns responses as RxJS observables.",
+  "keywords": [
+    "nestjs",
+    "nest",
+    "axios",
+    "http",
+    "http-client",
+    "rxjs"
+  ],
   "author": "Kamil Mysliwiec",
   "license": "MIT",
   "url": "https://github.com/nestjs/axios#readme",
