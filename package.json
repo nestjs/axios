@@ -46,7 +46,7 @@
     "@nestjs/platform-express": "12.4.0",
     "@nestjs/testing": "12.4.0",
     "@types/node": "26.6.6",
-    "axios": "1.21.0",
+    "axios": "1.21.1",
     "husky": "9.1.7",
     "lint-staged": "17.6.0",
     "oxlint": "^1.60.0",
