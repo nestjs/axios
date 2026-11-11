@@ -145,6 +145,16 @@ export class HttpService {
       const config: AxiosRequestConfig = { ...(argsCopy[configIdx] || {}) };
       argsCopy[configIdx] = config;
 
+      const controller = new AbortController();
+      if (config.signal) {
+        config.signal = AbortSignal.any([
+          config.signal as AbortSignal,
+          controller.signal,
+        ]);
+      } else {
+        config.signal = controller.signal;
+      }
+
       let cancelSource: CancelTokenSource;
       if (!config.cancelToken) {
         cancelSource = Axios.CancelToken.source();
@@ -164,6 +174,7 @@ export class HttpService {
           return;
         }
 
+        controller.abort();
         if (cancelSource) {
           cancelSource.cancel();
         }

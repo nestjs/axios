@@ -218,4 +218,14 @@ describe('HttpService (e2e)', () => {
 
     await expect(promise).rejects.toMatchObject({ message: 'aborted by test' });
   });
+
+  it('honours a caller-provided abort signal alongside subscription unsubscription', async () => {
+    const controller = new AbortController();
+    const promise = firstValueFrom(
+      service.get('/slow', { signal: controller.signal }),
+    );
+    controller.abort();
+
+    await expect(promise).rejects.toThrow();
+  });
 });
