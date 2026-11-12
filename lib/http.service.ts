@@ -146,12 +146,21 @@ export class HttpService {
       argsCopy[configIdx] = config;
 
       const controller = new AbortController();
-      if (config.signal) {
-        config.signal = AbortSignal.any([
-          config.signal as AbortSignal,
-          controller.signal,
-        ]);
+      let cleanupSignal: (() => void) | undefined;
+      if (config.signal instanceof AbortSignal) {
+        config.signal = AbortSignal.any([config.signal, controller.signal]);
       } else {
+        const callerSignal = config.signal;
+        if (callerSignal) {
+          if (callerSignal.aborted) {
+            controller.abort();
+          } else if (typeof callerSignal.addEventListener === 'function') {
+            const onAbort = () => controller.abort();
+            callerSignal.addEventListener('abort', onAbort, { once: true });
+            cleanupSignal = () =>
+              callerSignal.removeEventListener?.('abort', onAbort);
+          }
+        }
         config.signal = controller.signal;
       }
 
@@ -174,6 +183,7 @@ export class HttpService {
           return;
         }
 
+        cleanupSignal?.();
         controller.abort();
         if (cancelSource) {
           cancelSource.cancel();

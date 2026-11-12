@@ -219,13 +219,64 @@ describe('HttpService (e2e)', () => {
     await expect(promise).rejects.toMatchObject({ message: 'aborted by test' });
   });
 
-  it('honours a caller-provided abort signal alongside subscription unsubscription', async () => {
+  it('aborts the in-flight request on unsubscription when caller provides an AbortSignal', async () => {
+    abandoned.length = 0;
     const controller = new AbortController();
+    const subscription = service
+      .get('/slow', { signal: controller.signal })
+      .subscribe({ error: () => undefined });
+
+    await new Promise(resolve => setTimeout(resolve, 50));
+    subscription.unsubscribe();
+    await new Promise(resolve => setTimeout(resolve, 700));
+
+    expect(abandoned).toContain('/slow');
+    expect(controller.signal.aborted).toBe(false);
+  });
+
+  it('aborts the in-flight request on unsubscription when caller provides a cancel token', async () => {
+    const source = service.axiosRef.CancelToken?.source
+      ? service.axiosRef.CancelToken.source()
+      : undefined;
+
+    if (!source) {
+      return;
+    }
+
+    abandoned.length = 0;
+    const subscription = service
+      .get('/slow', { cancelToken: source.token })
+      .subscribe({ error: () => undefined });
+
+    await new Promise(resolve => setTimeout(resolve, 50));
+    subscription.unsubscribe();
+    await new Promise(resolve => setTimeout(resolve, 700));
+
+    expect(abandoned).toContain('/slow');
+  });
+
+  it('supports custom GenericAbortSignal objects without throwing', async () => {
+    const listeners = new Set<() => void>();
+    const customSignal = {
+      aborted: false,
+      addEventListener: (_type: string, listener: () => void) => {
+        listeners.add(listener);
+      },
+      removeEventListener: (_type: string, listener: () => void) => {
+        listeners.delete(listener);
+      },
+    };
+
     const promise = firstValueFrom(
-      service.get('/slow', { signal: controller.signal }),
+      service.get('/slow', { signal: customSignal }),
     );
-    controller.abort();
+    await new Promise(resolve => setTimeout(resolve, 50));
+    customSignal.aborted = true;
+    for (const listener of [...listeners]) {
+      listener();
+    }
 
     await expect(promise).rejects.toThrow();
+    expect(listeners.size).toBe(0);
   });
 });
