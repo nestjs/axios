@@ -147,22 +147,18 @@ export class HttpService {
 
       const controller = new AbortController();
       let cleanupSignal: (() => void) | undefined;
-      if (config.signal instanceof AbortSignal) {
-        config.signal = AbortSignal.any([config.signal, controller.signal]);
-      } else {
-        const callerSignal = config.signal;
-        if (callerSignal) {
-          if (callerSignal.aborted) {
-            controller.abort();
-          } else if (typeof callerSignal.addEventListener === 'function') {
-            const onAbort = () => controller.abort();
-            callerSignal.addEventListener('abort', onAbort, { once: true });
-            cleanupSignal = () =>
-              callerSignal.removeEventListener?.('abort', onAbort);
-          }
+      const callerSignal = config.signal;
+      if (callerSignal) {
+        if (callerSignal.aborted) {
+          controller.abort((callerSignal as any).reason);
+        } else if (typeof callerSignal.addEventListener === 'function') {
+          const onAbort = () => controller.abort((callerSignal as any).reason);
+          callerSignal.addEventListener('abort', onAbort, { once: true });
+          cleanupSignal = () =>
+            callerSignal.removeEventListener?.('abort', onAbort);
         }
-        config.signal = controller.signal;
       }
+      config.signal = controller.signal;
 
       let cancelSource: CancelTokenSource;
       if (!config.cancelToken) {
@@ -170,20 +166,25 @@ export class HttpService {
         config.cancelToken = cancelSource.token;
       }
 
+      let isSettled = false;
       axios(...argsCopy)
         .then(res => {
+          isSettled = true;
+          cleanupSignal?.();
           subscriber.next(res);
           subscriber.complete();
         })
         .catch(err => {
+          isSettled = true;
+          cleanupSignal?.();
           subscriber.error(err);
         });
       return () => {
-        if (config.responseType === 'stream') {
+        cleanupSignal?.();
+        if (config.responseType === 'stream' || isSettled) {
           return;
         }
 
-        cleanupSignal?.();
         controller.abort();
         if (cancelSource) {
           cancelSource.cancel();

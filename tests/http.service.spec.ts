@@ -2,6 +2,7 @@ import { createServer, type IncomingMessage, type Server } from 'node:http';
 import { AddressInfo } from 'node:net';
 import { Test } from '@nestjs/testing';
 import { firstValueFrom } from 'rxjs';
+import Axios from 'axios';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { HttpModule, HttpService } from '../lib/index.js';
 
@@ -203,13 +204,7 @@ describe('HttpService (e2e)', () => {
   });
 
   it('honours a caller-provided cancel token', async () => {
-    const source = service.axiosRef.CancelToken?.source
-      ? service.axiosRef.CancelToken.source()
-      : undefined;
-
-    if (!source) {
-      return;
-    }
+    const source = Axios.CancelToken.source();
 
     const promise = firstValueFrom(
       service.get('/slow', { cancelToken: source.token }),
@@ -235,13 +230,7 @@ describe('HttpService (e2e)', () => {
   });
 
   it('aborts the in-flight request on unsubscription when caller provides a cancel token', async () => {
-    const source = service.axiosRef.CancelToken?.source
-      ? service.axiosRef.CancelToken.source()
-      : undefined;
-
-    if (!source) {
-      return;
-    }
+    const source = Axios.CancelToken.source();
 
     abandoned.length = 0;
     const subscription = service
