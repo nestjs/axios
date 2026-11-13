@@ -2,6 +2,7 @@ import { createServer, type IncomingMessage, type Server } from 'node:http';
 import { AddressInfo } from 'node:net';
 import { Test } from '@nestjs/testing';
 import { firstValueFrom } from 'rxjs';
+import Axios from 'axios';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { HttpModule, HttpService } from '../lib/index.js';
 
@@ -43,6 +44,13 @@ describe('HttpService (e2e)', () => {
         if (req.url === '/boom') {
           res.writeHead(500, { 'content-type': 'application/json' });
           res.end(JSON.stringify({ message: 'kaboom' }));
+          return;
+        }
+
+        if (req.url === '/stream') {
+          res.writeHead(200, { 'content-type': 'text/plain' });
+          res.write('first chunk');
+          setTimeout(() => res.end(), 500);
           return;
         }
 
@@ -203,13 +211,7 @@ describe('HttpService (e2e)', () => {
   });
 
   it('honours a caller-provided cancel token', async () => {
-    const source = service.axiosRef.CancelToken?.source
-      ? service.axiosRef.CancelToken.source()
-      : undefined;
-
-    if (!source) {
-      return;
-    }
+    const source = Axios.CancelToken.source();
 
     const promise = firstValueFrom(
       service.get('/slow', { cancelToken: source.token }),
@@ -217,5 +219,76 @@ describe('HttpService (e2e)', () => {
     source.cancel('aborted by test');
 
     await expect(promise).rejects.toMatchObject({ message: 'aborted by test' });
+  });
+
+  it('aborts the in-flight request on unsubscription when caller provides an AbortSignal', async () => {
+    abandoned.length = 0;
+    const controller = new AbortController();
+    const subscription = service
+      .get('/slow', { signal: controller.signal })
+      .subscribe({ error: () => undefined });
+
+    await new Promise(resolve => setTimeout(resolve, 50));
+    subscription.unsubscribe();
+    await new Promise(resolve => setTimeout(resolve, 700));
+
+    expect(abandoned).toContain('/slow');
+    expect(controller.signal.aborted).toBe(false);
+  });
+
+  it('aborts the in-flight request on unsubscription when caller provides a cancel token', async () => {
+    const source = Axios.CancelToken.source();
+
+    abandoned.length = 0;
+    const subscription = service
+      .get('/slow', { cancelToken: source.token })
+      .subscribe({ error: () => undefined });
+
+    await new Promise(resolve => setTimeout(resolve, 50));
+    subscription.unsubscribe();
+    await new Promise(resolve => setTimeout(resolve, 700));
+
+    expect(abandoned).toContain('/slow');
+  });
+
+  it('stops a stream response when the caller aborts after it arrives', async () => {
+    abandoned.length = 0;
+    const controller = new AbortController();
+    const response = await firstValueFrom(
+      service.get('/stream', {
+        responseType: 'stream',
+        signal: controller.signal,
+      }),
+    );
+    response.data.on('error', () => undefined);
+    controller.abort();
+    await new Promise(resolve => setTimeout(resolve, 700));
+
+    expect(abandoned).toContain('/stream');
+  });
+
+  it('supports custom GenericAbortSignal objects without throwing', async () => {
+    const listeners = new Set<() => void>();
+    const customSignal = {
+      aborted: false,
+      addEventListener: (_type: string, listener: () => void) => {
+        listeners.add(listener);
+      },
+      removeEventListener: (_type: string, listener: () => void) => {
+        listeners.delete(listener);
+      },
+    };
+
+    const promise = firstValueFrom(
+      service.get('/slow', { signal: customSignal }),
+    );
+    await new Promise(resolve => setTimeout(resolve, 50));
+    customSignal.aborted = true;
+    for (const listener of [...listeners]) {
+      listener();
+    }
+
+    await expect(promise).rejects.toThrow();
+    expect(listeners.size).toBe(0);
   });
 });

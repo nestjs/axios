@@ -145,25 +145,49 @@ export class HttpService {
       const config: AxiosRequestConfig = { ...(argsCopy[configIdx] || {}) };
       argsCopy[configIdx] = config;
 
+      const controller = new AbortController();
+      let cleanupSignal: (() => void) | undefined;
+      const callerSignal = config.signal;
+      // A stream is not aborted on teardown, and axios keeps listening on the
+      // caller's signal until its body ends, so that signal is passed as is.
+      if (config.responseType !== 'stream') {
+        if (callerSignal?.aborted) {
+          controller.abort((callerSignal as any).reason);
+        } else if (typeof callerSignal?.addEventListener === 'function') {
+          const onAbort = () => controller.abort((callerSignal as any).reason);
+          callerSignal.addEventListener('abort', onAbort, { once: true });
+          cleanupSignal = () =>
+            callerSignal.removeEventListener?.('abort', onAbort);
+        }
+        config.signal = controller.signal;
+      }
+
       let cancelSource: CancelTokenSource;
       if (!config.cancelToken) {
         cancelSource = Axios.CancelToken.source();
         config.cancelToken = cancelSource.token;
       }
 
+      let isSettled = false;
       axios(...argsCopy)
         .then(res => {
+          isSettled = true;
+          cleanupSignal?.();
           subscriber.next(res);
           subscriber.complete();
         })
         .catch(err => {
+          isSettled = true;
+          cleanupSignal?.();
           subscriber.error(err);
         });
       return () => {
-        if (config.responseType === 'stream') {
+        cleanupSignal?.();
+        if (config.responseType === 'stream' || isSettled) {
           return;
         }
 
+        controller.abort();
         if (cancelSource) {
           cancelSource.cancel();
         }
