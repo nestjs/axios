@@ -47,6 +47,13 @@ describe('HttpService (e2e)', () => {
           return;
         }
 
+        if (req.url === '/stream') {
+          res.writeHead(200, { 'content-type': 'text/plain' });
+          res.write('first chunk');
+          setTimeout(() => res.end(), 500);
+          return;
+        }
+
         if (req.url === '/slow') {
           setTimeout(() => {
             res.writeHead(200, { 'content-type': 'application/json' });
@@ -242,6 +249,22 @@ describe('HttpService (e2e)', () => {
     await new Promise(resolve => setTimeout(resolve, 700));
 
     expect(abandoned).toContain('/slow');
+  });
+
+  it('stops a stream response when the caller aborts after it arrives', async () => {
+    abandoned.length = 0;
+    const controller = new AbortController();
+    const response = await firstValueFrom(
+      service.get('/stream', {
+        responseType: 'stream',
+        signal: controller.signal,
+      }),
+    );
+    response.data.on('error', () => undefined);
+    controller.abort();
+    await new Promise(resolve => setTimeout(resolve, 700));
+
+    expect(abandoned).toContain('/stream');
   });
 
   it('supports custom GenericAbortSignal objects without throwing', async () => {

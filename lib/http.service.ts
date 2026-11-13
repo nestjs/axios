@@ -148,17 +148,19 @@ export class HttpService {
       const controller = new AbortController();
       let cleanupSignal: (() => void) | undefined;
       const callerSignal = config.signal;
-      if (callerSignal) {
-        if (callerSignal.aborted) {
+      // A stream is not aborted on teardown, and axios keeps listening on the
+      // caller's signal until its body ends, so that signal is passed as is.
+      if (config.responseType !== 'stream') {
+        if (callerSignal?.aborted) {
           controller.abort((callerSignal as any).reason);
-        } else if (typeof callerSignal.addEventListener === 'function') {
+        } else if (typeof callerSignal?.addEventListener === 'function') {
           const onAbort = () => controller.abort((callerSignal as any).reason);
           callerSignal.addEventListener('abort', onAbort, { once: true });
           cleanupSignal = () =>
             callerSignal.removeEventListener?.('abort', onAbort);
         }
+        config.signal = controller.signal;
       }
-      config.signal = controller.signal;
 
       let cancelSource: CancelTokenSource;
       if (!config.cancelToken) {
