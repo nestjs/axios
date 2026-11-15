@@ -48,7 +48,7 @@
     "@types/node": "26.6.6",
     "axios": "1.21.1",
     "husky": "9.1.7",
-    "lint-staged": "17.6.0",
+    "lint-staged": "17.6.1",
     "oxlint": "^1.60.0",
     "prettier": "3.10.1",
     "reflect-metadata": "0.2.2",
