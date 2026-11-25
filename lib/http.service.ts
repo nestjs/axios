@@ -148,9 +148,14 @@ export class HttpService {
       const controller = new AbortController();
       let cleanupSignal: (() => void) | undefined;
       const callerSignal = config.signal;
+      // The response type can also come from the instance defaults, e.g.
+      // `HttpModule.register({ responseType: 'stream' })`.
+      const isStream =
+        (config.responseType ?? this.instance.defaults?.responseType) ===
+        'stream';
       // A stream is not aborted on teardown, and axios keeps listening on the
       // caller's signal until its body ends, so that signal is passed as is.
-      if (config.responseType !== 'stream') {
+      if (!isStream) {
         if (callerSignal?.aborted) {
           controller.abort((callerSignal as any).reason);
         } else if (typeof callerSignal?.addEventListener === 'function') {
@@ -183,7 +188,7 @@ export class HttpService {
         });
       return () => {
         cleanupSignal?.();
-        if (config.responseType === 'stream' || isSettled) {
+        if (isStream || isSettled) {
           return;
         }
 

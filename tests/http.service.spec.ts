@@ -267,6 +267,43 @@ describe('HttpService (e2e)', () => {
     expect(abandoned).toContain('/stream');
   });
 
+  describe('with responseType "stream" set on the module', () => {
+    let streamService: HttpService;
+
+    beforeAll(async () => {
+      const moduleRef = await Test.createTestingModule({
+        imports: [HttpModule.register({ baseURL, responseType: 'stream' })],
+      }).compile();
+      streamService = moduleRef.get(HttpService);
+    });
+
+    it('stops a stream response when the caller aborts after it arrives', async () => {
+      abandoned.length = 0;
+      const controller = new AbortController();
+      const response = await firstValueFrom(
+        streamService.get('/stream', { signal: controller.signal }),
+      );
+      response.data.on('error', () => undefined);
+      controller.abort();
+      await new Promise(resolve => setTimeout(resolve, 700));
+
+      expect(abandoned).toContain('/stream');
+    });
+
+    it('leaves a stream response running after teardown', async () => {
+      abandoned.length = 0;
+      const subscription = streamService
+        .get('/slow')
+        .subscribe({ error: () => undefined });
+
+      await new Promise(resolve => setTimeout(resolve, 50));
+      subscription.unsubscribe();
+      await new Promise(resolve => setTimeout(resolve, 700));
+
+      expect(abandoned).not.toContain('/slow');
+    });
+  });
+
   it('supports custom GenericAbortSignal objects without throwing', async () => {
     const listeners = new Set<() => void>();
     const customSignal = {
